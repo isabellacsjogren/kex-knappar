@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Samla alla resultat – Knappstudie</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="resultat.css">
+</head>
+<body>
+  <main id="app" class="resultat-page">
+    <header class="resultat-header">
+      <h1>Samla alla resultat</h1>
+      <p class="tagline">Här samlar du in och ser alla deltagares svar på ett ställe.</p>
+    </header>
+
+    <section class="card import-section">
+      <h2>1. Lägg till resultat</h2>
+      <p class="card-desc">Varje deltagare laddar ner sin fil från tack-sidan. Ladda upp filen här (eller klistra in innehållet) och klicka på knappen.</p>
+      <div class="import-options">
+        <div class="file-wrap">
+          <label for="csv-file">Välj CSV-fil(er)</label>
+          <input type="file" id="csv-file" accept=".csv,text/csv" multiple>
+        </div>
+        <span class="or">eller klistra in CSV:</span>
+        <textarea id="csv-paste" rows="3" placeholder="Klistra in rader från en resultat.csv här..."></textarea>
+      </div>
+      <button type="button" id="btn-import" class="btn-primary">Lägg till resultat</button>
+      <p id="import-message" class="message" aria-live="polite"></p>
+    </section>
+
+    <section class="card stored-section">
+      <h2>2. Sparad data och sammanställning</h2>
+      <p class="card-desc">Allt du lägger till sparas i webbläsaren på den här datorn (localStorage). Det försvinner inte förrän du rensar.</p>
+      <div id="stored-stats" class="stored-stats">Inga resultat sparade ännu.</div>
+      <div id="aggregate-summary" class="aggregate-summary hidden"></div>
+      <div class="stored-actions">
+        <button type="button" id="btn-download-all" class="btn-download" disabled>Ladda ner alla som CSV</button>
+        <button type="button" id="btn-clear" class="btn-clear">Rensa all sparad data</button>
+      </div>
+    </section>
+
+    <details class="help-box">
+      <summary>Vad betyder allt?</summary>
+      <ul>
+        <li><strong>Lägg till resultat:</strong> Här importerar du varje deltagares CSV (en eller flera filer). Klicka på den gröna knappen när du valt fil eller klistrat in text.</li>
+        <li><strong>Sparad data:</strong> Visar hur många deltagare (sessioner) du har samlat. Tabellen under visar hur många gånger varje knapptyp valdes.</li>
+        <li><strong>Ladda ner alla som CSV:</strong> Sparar all samlad data i en fil till din dator (t.ex. för analys i Excel eller R).</li>
+        <li><strong>Rensa:</strong> Tar bort all sparad data från sidan. Använd bara om du verkligen vill börja om från noll.</li>
+      </ul>
+    </details>
+
+    <p class="back-link"><a href="index.html">← Tillbaka till experimentet</a></p>
+  </main>
+  <script src="resultat.js"></script>
+</body>
+</html>

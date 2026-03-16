@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knappstudie – tillförlitlighet</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="app">
+    <!-- Intro screen -->
+    <section id="intro" class="screen">
+      <h1>Knappstudie</h1>
+      <p class="instruction">
+        Du kommer att se par av knappar. Klicka på den knapp du skulle känna dig bekvämast med att interagera med på en webbplats.
+      </p>
+      <button type="button" id="btn-start" class="btn-start">Starta</button>
+    </section>
+
+    <!-- Trial screen: looks like a webpage -->
+    <section id="trial" class="screen hidden">
+      <div class="page-frame">
+        <header class="page-header">
+          <span class="page-logo">Sidan.se</span>
+          <nav class="page-nav">
+            <span>Start</span>
+            <span>Tjänster</span>
+            <span>Kontakt</span>
+          </nav>
+        </header>
+        <article class="page-content">
+          <p class="page-text">Vill du veta mer om våra tjänster? Välj ett alternativ nedan för att gå vidare.</p>
+          <div id="buttons-container" class="buttons-container">
+            <button type="button" id="btn-left" class="stimulus-btn"></button>
+            <button type="button" id="btn-right" class="stimulus-btn"></button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Thank-you screen -->
+    <section id="thankyou" class="screen hidden">
+      <h1>Tack!</h1>
+      <p>Tack för att du deltog i studien.</p>
+      <button type="button" id="btn-show-results" class="btn-secondary">Visa mina resultat</button>
+      <div id="result-summary" class="result-summary hidden" aria-live="polite"></div>
+      <button type="button" id="btn-download" class="btn-download">Ladda ner resultat som CSV</button>
+      <p class="storage-info">Resultat från detta test sparas inte automatiskt – ladda ner CSV om du vill spara dem. På sidan <a href="resultat.html">Samla alla resultat</a> sparas inlästa CSV-filer i webbläsaren (localStorage) på den dator du använder.</p>
+      <button type="button" id="btn-new-test" class="btn-new-test">Starta nytt test</button>
+      <p class="researcher-link"><a href="resultat.html">För forskare: Samla alla resultat</a></p>
+    </section>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
