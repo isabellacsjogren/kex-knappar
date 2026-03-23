@@ -7,46 +7,71 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="resultat.css">
 </head>
-<body>
+<body class="body-resultat">
   <main id="app" class="resultat-page">
     <header class="resultat-header">
+      <p class="resultat-kicker">Forskning</p>
       <h1>Samla alla resultat</h1>
-      <p class="tagline">Här samlar du in och ser alla deltagares svar på ett ställe.</p>
+      <p class="tagline">Här samlar du in och ser alla deltagares svar på ett ställe – allt sparas i webbläsaren på den här datorn tills du rensar.</p>
     </header>
 
-    <section class="card import-section">
-      <h2>1. Lägg till resultat</h2>
-      <p class="card-desc">Varje deltagare laddar ner sin fil från tack-sidan. Ladda upp filen här (eller klistra in innehållet) och klicka på knappen.</p>
-      <div class="import-options">
-        <div class="file-wrap">
-          <label for="csv-file">Välj CSV-fil(er)</label>
-          <input type="file" id="csv-file" accept=".csv,text/csv" multiple>
-        </div>
-        <span class="or">eller klistra in CSV:</span>
-        <textarea id="csv-paste" rows="3" placeholder="Klistra in rader från en resultat.csv här..."></textarea>
-      </div>
-      <button type="button" id="btn-import" class="btn-primary">Lägg till resultat</button>
-      <p id="import-message" class="message" aria-live="polite"></p>
+    <section class="instructions-panel" aria-labelledby="instr-title">
+      <h2 id="instr-title" class="instructions-title">Så här gör du</h2>
+      <ol class="instructions-steps">
+        <li>
+          <span class="step-num">1</span>
+          <span class="step-text">Be varje deltagare att efter experimentet ladda ner sin <strong class="nowrap">resultat.csv</strong> från tack-sidan och skicka filen till dig.</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span class="step-text">I <strong>kolumnen till vänster</strong> drar du in deltagarnas CSV-filer i rutan. Filerna läggs till direkt.</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span class="step-text">I <strong>kolumnen till höger</strong> ser du hur många sessioner som sparats, en sammanställning per knapptyp, och kan ladda ner allt som en fil eller rensa.</span>
+        </li>
+      </ol>
     </section>
 
-    <section class="card stored-section">
-      <h2>2. Sparad data och sammanställning</h2>
-      <p class="card-desc">Allt du lägger till sparas i webbläsaren på den här datorn (localStorage). Det försvinner inte förrän du rensar.</p>
-      <div id="stored-stats" class="stored-stats">Inga resultat sparade ännu.</div>
-      <div id="aggregate-summary" class="aggregate-summary hidden"></div>
-      <div class="stored-actions">
-        <button type="button" id="btn-download-all" class="btn-download" disabled>Ladda ner alla som CSV</button>
-        <button type="button" id="btn-clear" class="btn-clear">Rensa all sparad data</button>
+    <div class="cards-grid-wrapper">
+      <div class="columns-labels" aria-hidden="true">
+        <span class="column-label column-label--left">Steg 1 – Importera</span>
+        <span class="column-label column-label--right">Steg 2 – Granska &amp; exportera</span>
       </div>
-    </section>
+      <div class="cards-grid">
+        <section class="card import-section">
+          <h2>Importera resultat</h2>
+          <p class="card-desc">Dra och släpp en eller flera CSV-filer i rutan nedan – de läggs till direkt.</p>
+          <div class="import-options">
+            <div id="drop-zone" class="drop-zone" role="region" aria-label="Släpp CSV-filer här" aria-describedby="import-message">
+              <span class="drop-zone__title">Dra och släpp CSV-filer hit</span>
+              <span class="drop-zone__sub">Du kan släppa flera filer samtidigt</span>
+            </div>
+            <p id="import-message" class="message" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section class="card stored-section card--accent">
+          <h2>Sparad data och sammanställning</h2>
+          <p class="card-desc">Data sparas lokalt i webbläsaren (localStorage) och finns kvar tills du rensar eller tömmer webbplatsdata.</p>
+          <div id="stored-stats" class="stored-stats">Inga resultat sparade ännu.</div>
+          <div id="aggregate-summary" class="aggregate-summary hidden"></div>
+          <div class="stored-actions">
+            <button type="button" id="btn-download-all" class="btn-download" disabled>Ladda ner alla som CSV</button>
+            <button type="button" id="btn-clear" class="btn-clear">Rensa all sparad data</button>
+          </div>
+        </section>
+      </div>
+    </div>
 
     <details class="help-box">
-      <summary>Vad betyder allt?</summary>
+      <summary>Vad betyder knapparna och fälten?</summary>
       <ul>
-        <li><strong>Lägg till resultat:</strong> Här importerar du varje deltagares CSV (en eller flera filer). Klicka på den gröna knappen när du valt fil eller klistrat in text.</li>
-        <li><strong>Sparad data:</strong> Visar hur många deltagare (sessioner) du har samlat. Tabellen under visar hur många gånger varje knapptyp valdes.</li>
-        <li><strong>Ladda ner alla som CSV:</strong> Sparar all samlad data i en fil till din dator (t.ex. för analys i Excel eller R).</li>
-        <li><strong>Rensa:</strong> Tar bort all sparad data från sidan. Använd bara om du verkligen vill börja om från noll.</li>
+        <li><strong>Importera:</strong> Dra in CSV-filer i rutan. Data läggs till direkt.</li>
+        <li><strong>Sparad data:</strong> Visar antal sessioner (deltagare). Tabellen visar hur många gånger varje knapptyp valts totalt.</li>
+        <li><strong>Ladda ner alla som CSV:</strong> Exporterar all samlad data till en fil (t.ex. för Excel eller R).</li>
+        <li><strong>Rensa:</strong> Tar bort all sparad data i den här webbläsaren.</li>
+        <li><strong>Analys (CSV):</strong> Varje rad är ett beslut mellan två knappar. <code>pair_sv</code> = båda alternativen. <code>chosen_sv</code> = den du klickade på, <code>against_sv</code> = den andra i paret. <code>rt_s</code> = tid för själva valet mellan de två (sekunder med två decimaler, punkt som decimaltecken).</li>
       </ul>
     </details>
 

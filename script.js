@@ -2,7 +2,7 @@
   'use strict';
 
   const NUM_TRIALS = 12;
-  const BUTTON_TEXT = 'Läs mer';
+  const BUTTON_TEXT = 'Tillåt';
 
   const VARIANTS = [
     { color: 'red', shape: 'rounded' },
@@ -88,7 +88,12 @@
     dom.intro.classList.add('hidden');
     dom.trial.classList.add('hidden');
     dom.thankyou.classList.add('hidden');
+    dom.intro.hidden = true;
+    dom.trial.hidden = true;
+    dom.thankyou.hidden = true;
+
     screen.classList.remove('hidden');
+    screen.hidden = false;
   }
 
   function setButtonStyles(btn, variant) {
@@ -107,6 +112,9 @@
 
   function recordChoice(chosen) {
     const t = state.trials[state.currentTrial];
+    const picked = chosen === 'left' ? t.left : t.right;
+    const other = chosen === 'left' ? t.right : t.left;
+    /* Tid = från att båda alternativen visas tills klick (beslut mellan de två). */
     state.data.push({
       session_id: state.sessionId,
       trial: state.currentTrial + 1,
@@ -114,7 +122,12 @@
       left_shape: t.left.shape,
       right_color: t.right.color,
       right_shape: t.right.shape,
+      pair_sv: variantLabel(t.left) + ' vs ' + variantLabel(t.right),
       chosen: chosen,
+      chosen_color: picked.color,
+      chosen_shape: picked.shape,
+      chosen_sv: variantLabel(picked),
+      against_sv: variantLabel(other),
       reaction_ms: Date.now() - state.startTime
     });
   }
@@ -125,7 +138,9 @@
       counts[variantKey(v)] = { label: variantLabel(v), count: 0 };
     });
     state.data.forEach(function (row) {
-      const key = row.chosen === 'left' ? row.left_color + '-' + row.left_shape : row.right_color + '-' + row.right_shape;
+      const key = row.chosen_color && row.chosen_shape
+        ? row.chosen_color + '-' + row.chosen_shape
+        : (row.chosen === 'left' ? row.left_color + '-' + row.left_shape : row.right_color + '-' + row.right_shape);
       if (counts[key]) counts[key].count += 1;
     });
     return VARIANTS.map(function (v) {
@@ -140,15 +155,60 @@
     return colorNames[v.color] + ' ' + shapeNames[v.shape];
   }
 
+  /** Båda alternativen i försöket (samma som pair_sv om den finns). */
+  function pairLabelFromRow(row) {
+    if (row.pair_sv) return row.pair_sv;
+    return variantLabel({ color: row.left_color, shape: row.left_shape }) + ' vs ' + variantLabel({ color: row.right_color, shape: row.right_shape });
+  }
+
+  function chosenSvFromRow(row) {
+    if (row.chosen_sv) return row.chosen_sv;
+    if (row.chosen_color && row.chosen_shape) {
+      return variantLabel({ color: row.chosen_color, shape: row.chosen_shape });
+    }
+    if (row.chosen === 'left') {
+      return variantLabel({ color: row.left_color, shape: row.left_shape });
+    }
+    return variantLabel({ color: row.right_color, shape: row.right_shape });
+  }
+
+  function againstSvFromRow(row) {
+    if (row.against_sv) return row.against_sv;
+    if (row.chosen === 'left') {
+      return variantLabel({ color: row.right_color, shape: row.right_shape });
+    }
+    if (row.chosen === 'right') {
+      return variantLabel({ color: row.left_color, shape: row.left_shape });
+    }
+    return '';
+  }
+
+  function formatTimeSeconds(row) {
+    if (row.reaction_ms == null) return '–';
+    const s = (row.reaction_ms / 1000).toFixed(2).replace('.', ',');
+    return s + ' s';
+  }
+
   function renderSummary() {
     if (!dom.resultSummary) return;
     const summary = getSummary();
     summary.sort(function (a, b) { return b.count - a.count; });
-    dom.resultSummary.innerHTML = '<table class="summary-table"><thead><tr><th>Knapp</th><th>Antal val</th></tr></thead><tbody>' +
+
+    let html = '<h3 class="summary-heading">Dina val</h3>';
+    html += '<table class="summary-table summary-table--trials"><thead><tr><th>Du valde</th><th>Den ställdes mot</th><th>Tid för valet (s)</th></tr></thead><tbody>';
+    state.data.forEach(function (row) {
+      html += '<tr><td>' + chosenSvFromRow(row) + '</td><td>' + againstSvFromRow(row) + '</td><td>' + formatTimeSeconds(row) + '</td></tr>';
+    });
+    html += '</tbody></table>';
+
+    html += '<h3 class="summary-heading">Sammanfattning per knapptyp</h3>';
+    html += '<table class="summary-table"><thead><tr><th>Knapp</th><th>Antal val</th></tr></thead><tbody>' +
       summary.map(function (s) {
         return '<tr><td>' + s.label + '</td><td>' + s.count + '</td></tr>';
       }).join('') +
       '</tbody></table>';
+
+    dom.resultSummary.innerHTML = html;
   }
 
   function onChoice(chosen) {
@@ -186,9 +246,12 @@
 
   function downloadCSV() {
     if (state.data.length === 0) return;
-    const headers = ['session_id', 'trial', 'left_color', 'left_shape', 'right_color', 'right_shape', 'chosen', 'reaction_ms'];
+    const headers = ['session_id', 'trial', 'left_color', 'left_shape', 'right_color', 'right_shape', 'pair_sv', 'chosen', 'chosen_color', 'chosen_shape', 'chosen_sv', 'against_sv', 'rt_s'];
     const rows = state.data.map(function (row) {
-      return headers.map(function (h) { return row[h]; }).join(',');
+      return headers.map(function (h) {
+        if (h === 'rt_s') return (row.reaction_ms / 1000).toFixed(2);
+        return row[h];
+      }).join(',');
     });
     const csv = headers.join(',') + '\n' + rows.join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

@@ -18,9 +18,10 @@ body {
 #app {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
 }
 
 .screen {
@@ -29,16 +30,23 @@ body {
   text-align: center;
 }
 
-.screen.hidden {
-  display: none;
+/* Dölj skärmar – !important så inget #id { display:flex } kan ta över */
+.screen.hidden,
+.screen[hidden] {
+  display: none !important;
 }
 
 /* Intro */
 #intro .instruction {
-  margin: 1.5rem 0 2rem;
+  margin: 2rem 0 2.5rem;
   max-width: 32em;
   margin-left: auto;
   margin-right: auto;
+  line-height: 1.65;
+}
+
+#intro h1 {
+  margin-bottom: 0.5rem;
 }
 
 .btn-start {
@@ -55,28 +63,47 @@ body {
   background: #333;
 }
 
-/* Trial – looks like a webpage */
+/* När försöket körs: hela viewporten = fejkad webbplats i bakgrunden */
+#app:has(#trial:not(.hidden)) {
+  padding: 0;
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Trial: helskärms "sida" under overlay */
 #trial {
-  max-width: 720px;
+  position: relative;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  min-height: 100dvh;
+  text-align: left;
 }
 
 .page-frame {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-radius: 0;
+  box-shadow: none;
   overflow: hidden;
-  min-height: 420px;
+  display: flex;
+  flex-direction: column;
 }
 
 .page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 1.5rem;
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
   background: #fafafa;
   border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .page-logo {
@@ -96,19 +123,101 @@ body {
   cursor: default;
 }
 
-.page-content {
-  padding: 2.5rem 2rem 2.5rem;
-  text-align: center;
+.page-site {
+  flex: 1;
+  padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 4rem;
+  width: 100%;
+  max-width: 52rem;
+  margin: 0 auto;
 }
 
-.page-text {
-  margin: 0 0 2rem;
-  font-size: 1.1rem;
+.page-heading {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.page-fake-text {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
   color: #444;
-  line-height: 1.5;
-  max-width: 36em;
-  margin-left: auto;
-  margin-right: auto;
+  line-height: 1.6;
+  max-width: 40em;
+}
+
+.page-fake-text--muted {
+  font-size: 0.98rem;
+  color: #666;
+}
+
+/* Mörk overlay över hela webbläsarfönstret */
+.cookie-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* Cookie-popup centrerad över hela skärmen */
+.cookie-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  pointer-events: none;
+}
+
+.cookie-popup-inner {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 1.75rem 1.75rem 1.65rem;
+  text-align: left;
+}
+
+.cookie-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cookie-popup-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.cookie-popup-close {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #1a1a2e;
+  font-weight: 300;
+  user-select: none;
+  margin-top: -0.15rem;
+}
+
+.cookie-popup-text {
+  margin: 0 0 1.75rem;
+  font-size: 0.9375rem;
+  color: #3a3a45;
+  line-height: 1.6;
 }
 
 .buttons-container {
@@ -117,6 +226,53 @@ body {
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/*
+ * Cookie-popup: måste alltid vara CSS Grid med två kolumner.
+ * Annars kan .buttons-container (flex) vinna i vissa lägen → bara en knapp syns eller fel layout.
+ */
+#buttons-container.cookie-buttons {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  width: 100%;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 0;
+  overflow: visible;
+}
+
+/* Två knappar i smal popup: global .stimulus-btn har min-width 280px → båda får inte plats → bara en syns */
+#buttons-container.cookie-buttons .stimulus-btn {
+  min-width: 0 !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.cookie-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.cookie-buttons .stimulus-btn {
+  min-width: 0;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+.cookie-buttons .stimulus-btn.btn-rounded {
+  border-radius: 22px;
+}
+
+.cookie-buttons .stimulus-btn.btn-sharp {
+  border-radius: 0;
 }
 
 .stimulus-btn {
@@ -160,11 +316,84 @@ body {
   border-radius: 0;
 }
 
-/* Thank-you */
+/* Thank-you – flex bara när synlig, annars vinner .screen.hidden */
+#thankyou:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+#thankyou > p {
+  margin: 1rem 0;
+  line-height: 1.6;
+  text-align: center;
+  max-width: 34em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+#thankyou h1 {
+  margin-bottom: 0.75rem;
+}
+
+/* Centrerad textblock (undviker att flex-barn ser vänsterjusterade ut) */
+#thankyou .thankyou-storage {
+  width: 100%;
+  max-width: 34em;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+#thankyou .thankyou-storage .storage-info {
+  margin: 1.5rem 0 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.65;
+  text-align: center;
+}
+
 .result-summary {
   margin: 1.5rem auto;
+  text-align: center;
+  max-width: min(100%, 36rem);
+  width: 100%;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+}
+
+.result-summary .summary-heading {
+  text-align: center;
+}
+
+.result-summary .summary-table {
+  margin-left: auto;
+  margin-right: auto;
   text-align: left;
-  max-width: 280px;
+}
+
+.summary-heading {
+  margin: 1.25rem 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.summary-heading:first-of-type {
+  margin-top: 0;
+}
+
+.summary-table--trials {
+  font-size: 0.95rem;
+}
+
+.summary-table--trials td:last-child {
+  font-variant-numeric: tabular-nums;
 }
 
 .summary-table {
@@ -207,13 +436,9 @@ body {
   display: none;
 }
 
+/* .storage-info utanför .thankyou-storage (t.ex. om klass återanvänds) */
 .storage-info {
-  margin-top: 1.5rem;
-  font-size: 0.85rem;
-  color: #555;
-  max-width: 32em;
-  margin-left: auto;
-  margin-right: auto;
+  text-align: center;
 }
 
 .storage-info a {
@@ -238,6 +463,11 @@ body {
 .researcher-link {
   margin-top: 1.5rem;
   font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  max-width: 36em;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .researcher-link a {
@@ -270,25 +500,53 @@ body {
     font-size: 0.85rem;
   }
 
-  .page-content {
-    padding: 1.75rem 1.25rem;
+  .page-site {
+    padding: 1.25rem 1rem 2.5rem;
   }
 
-  .page-text {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
+  .cookie-popup-inner {
+    padding: 1.25rem 1.35rem 1.5rem;
   }
 
-  .buttons-container {
-    flex-direction: column;
-    gap: 2rem;
+  .cookie-popup-title {
+    font-size: 1.05rem;
   }
 
-  .stimulus-btn {
-    width: 100%;
-    max-width: 340px;
-    min-width: 0;
-    padding: 1.5rem 2rem;
-    font-size: 1.35rem;
+  .cookie-popup-text {
+    font-size: 0.9rem;
+    margin-bottom: 1.25rem;
   }
+
+  #buttons-container.cookie-buttons {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  #buttons-container.cookie-buttons .stimulus-btn {
+    min-width: 0 !important;
+    padding: 0.85rem 0.4rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* resultat.html – global #app (flex-rad) får inte gälla här */
+body.body-resultat {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body.body-resultat #app.resultat-page {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: min(1560px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding: clamp(1.75rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4.5rem);
 }

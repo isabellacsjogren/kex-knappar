@@ -12,13 +12,14 @@
     <section id="intro" class="screen">
       <h1>Knappstudie</h1>
       <p class="instruction">
-        Du kommer att se par av knappar. Klicka på den knapp du skulle känna dig bekvämast med att interagera med på en webbplats.
+        Du kommer att se hur en webbplats kan be om ditt tillstånd – som när den frågar om du litar på den och vill trycka <strong>Tillåt</strong>. 
+        Klicka på den <strong>Tillåt</strong>-knapp du skulle lita mest på om du verkligen ville ge tillstånd.
       </p>
       <button type="button" id="btn-start" class="btn-start">Starta</button>
     </section>
 
-    <!-- Trial screen: looks like a webpage -->
-    <section id="trial" class="screen hidden">
+    <!-- Trial screen: webpage + cookie popup -->
+    <section id="trial" class="screen hidden" hidden>
       <div class="page-frame">
         <header class="page-header">
           <span class="page-logo">Sidan.se</span>
@@ -28,24 +29,42 @@
             <span>Kontakt</span>
           </nav>
         </header>
-        <article class="page-content">
-          <p class="page-text">Vill du veta mer om våra tjänster? Välj ett alternativ nedan för att gå vidare.</p>
-          <div id="buttons-container" class="buttons-container">
+        <main class="page-site">
+          <h2 class="page-heading">Välkommen</h2>
+          <p class="page-fake-text">Välkommen till vår webbplats. Här hittar du information om våra tjänster och hur du kan komma i kontakt med oss.</p>
+          <p class="page-fake-text page-fake-text--muted">Vi arbetar för att ge dig en trygg och tydlig upplevelse när du besöker oss online.</p>
+        </main>
+      </div>
+      <div class="cookie-backdrop" aria-hidden="true"></div>
+      <div class="cookie-popup" role="dialog" aria-modal="true" aria-labelledby="cookie-popup-title">
+        <div class="cookie-popup-inner">
+          <div class="cookie-popup-header">
+            <h2 id="cookie-popup-title" class="cookie-popup-title">Cookie-inställningar</h2>
+            <span class="cookie-popup-close" aria-hidden="true">×</span>
+          </div>
+          <p class="cookie-popup-text">
+            Vi använder cookies och liknande tekniker för att anpassa innehåll, skräddarsy annonser och ge dig en bättre upplevelse. 
+            Genom att klicka Tillåt godkänner du detta, enligt vår cookiepolicy. 
+            <strong>Vill du lita på webbplatsen och tillåta detta?</strong>
+          </p>
+          <div id="buttons-container" class="buttons-container cookie-buttons">
             <button type="button" id="btn-left" class="stimulus-btn"></button>
             <button type="button" id="btn-right" class="stimulus-btn"></button>
           </div>
-        </article>
+        </div>
       </div>
     </section>
 
     <!-- Thank-you screen -->
-    <section id="thankyou" class="screen hidden">
+    <section id="thankyou" class="screen hidden" hidden>
       <h1>Tack!</h1>
       <p>Tack för att du deltog i studien.</p>
       <button type="button" id="btn-show-results" class="btn-secondary">Visa mina resultat</button>
       <div id="result-summary" class="result-summary hidden" aria-live="polite"></div>
       <button type="button" id="btn-download" class="btn-download">Ladda ner resultat som CSV</button>
-      <p class="storage-info">Resultat från detta test sparas inte automatiskt – ladda ner CSV om du vill spara dem. På sidan <a href="resultat.html">Samla alla resultat</a> sparas inlästa CSV-filer i webbläsaren (localStorage) på den dator du använder.</p>
+      <div class="thankyou-storage">
+        <p class="storage-info">Resultat från detta test sparas inte automatiskt – ladda ner CSV om du vill spara dem. På sidan <a href="resultat.html">Samla alla resultat</a> sparas inlästa CSV-filer i webbläsaren (localStorage) på den dator du använder.</p>
+      </div>
       <button type="button" id="btn-new-test" class="btn-new-test">Starta nytt test</button>
       <p class="researcher-link"><a href="resultat.html">För forskare: Samla alla resultat</a></p>
     </section>
